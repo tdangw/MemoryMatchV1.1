@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💫Memory Match</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+<body>
+  <div class="main-wrapper">
+    <!-- Game Container -->
+    <div id="game-container" style="display: none;">
+      <div id="game-title" class="game-header">
+        <div class="header-top">
+          <div class="header-left">
+            <button id="btn-menu" class="icon-btn" title="Menu">🏠</button>
+            <button id="btn-restart" class="icon-btn" title="Chơi lại">🔄</button>
+            <button id="btn-full-reset" class="icon-btn" title="Xoá dữ liệu">🪄</button>
+            <button id="btn-game-settings" class="icon-btn" title="Cài đặt">⚙️</button>
+            <button id="btn-shop" class="icon-btn" title="Shop">🛒</button>
+
+            <button id="btn-hint" class="icon-btn" title="Gợi ý">🔍<span id="hint">--</span></button>
+          </div>
+          <div id="game-logo" class="header-title sparkle-text">💫Memory Match💫</div>
+          <div class="header-right">
+            <span class="info" id="high-score">🥇--</span>
+            <span class="info" id="score-title">⭐<span id="score">0</span></span>
+            <span class="info" id="current-level">🧩<span id="level">1</span></span>
+            <span class="info" id="timer">⏱️--:--</span>
+            
+            <div id="version-info" class="version-icon">ℹ️</div>
+
+          </div>
+        </div>
+      </div>
+      <div id="grid-container"></div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div id="settings-container" style="display: none;">
+      <h2 class="settings-title">⚙️ Cài đặt</h2>
+
+      <!-- Toggle Sound -->
+      <div class="settings-option center-option">
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-sound" checked />
+          <span class="slider"></span>
+        </label>
+        <span class="label">🎚️Âm thanh</span>
+      </div>
+
+      <!-- Menu Music -->
+      <div class="settings-group">
+        <h3>🎵 Nhạc Menu</h3>
+        <label><input type="radio" name="menu-music" value="menu1.mp3" /> Menu 1</label>
+        <label><input type="radio" name="menu-music" value="menu2.mp3" /> Menu 2</label>
+        <label><input type="radio" name="menu-music" value="none" /> Tắt nhạc menu</label>
+      </div>
+
+      <!-- Game Background Music -->
+      <div class="settings-group">
+        <h3>🎶 Nhạc Nền Game</h3>
+        <label><input type="radio" name="game-music" value="bg1.mp3" /> Game 1</label>
+        <label><input type="radio" name="game-music" value="bg2.mp3" /> Game 2</label>
+        <label><input type="radio" name="game-music" value="none" /> Tắt nhạc game</label>
+      </div>
+
+      <!-- Audio player (hidden) -->
+      <audio id="bg-music" loop></audio>
+
+      <!-- Return Buttons -->
+      <div class="center-option">
+        <button id="btn-back-menu" class="back-menu-btn">🔙 Quay về Menu</button>
+        <button id="btn-back" class="back-in-game-btn">Quay lại Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script files -->
+  <!-- Scripts -->
+<script type="module" src="js/utils.js"></script>
+<script type="module" src="js/gameState.js"></script>
+<script type="module" src="js/ui.js"></script>
+<script type="module" src="js/grid.js"></script>
+<script type="module" src="js/logic.js"></script>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/mainmenu.js"></script>
+<script type="module" src="js/settings.js"></script>
+<script type="module" src="js/bonusTile.js"></script>
+<script type="module" src="js/shop.js"></script>
+
+</body>
+</html>
