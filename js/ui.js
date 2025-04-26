@@ -42,25 +42,24 @@ export function showBonusOverlay(message) {
   const modal = document.createElement('div');
   modal.className = 'modal slide-down';
   modal.innerHTML = `
-    <h2>🎁 Thông báotest</h2>
+    <h2>🎁 Thông báo</h2>
     <p>${message}</p>
-    <button class="settings-btn">Tiếp tục</button>
   `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
 
   if (gameState.settings?.sound) {
     sounds.overlay.currentTime = 0;
     sounds.overlay.play().catch(() => {});
   }
 
-  modal.querySelector('button').onclick = () => {
+  setTimeout(() => {
     modal.classList.add('slide-up');
     overlay.classList.remove('fade-in');
     overlay.classList.add('fade-out');
     setTimeout(() => document.body.removeChild(overlay), 300);
-  };
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  }, 1000); // Tự động ẩn sau 1 giây
 }
 
 export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
@@ -70,27 +69,26 @@ export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
   const modal = document.createElement('div');
   modal.className = 'modal slide-down';
   modal.innerHTML = `
-    <h2>🎉Thưởng qua màn!</h2>
+    <h2>🎉 Thưởng qua màn!</h2>
     <p>⭐+${reward} điểm</p>
     <p>💡+${hintGain} gợi ý</p>
     <p>⏱️+${timeBonus} giây</p>
-    <button class="settings-btn">Tiếp tục</button>
   `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
 
   if (gameState.settings?.sound) {
     sounds.bonus.currentTime = 0;
     sounds.bonus.play().catch(() => {});
   }
 
-  modal.querySelector('button').onclick = () => {
+  setTimeout(() => {
     modal.classList.add('slide-up');
     overlay.classList.remove('fade-in');
     overlay.classList.add('fade-out');
     setTimeout(() => document.body.removeChild(overlay), 300);
-  };
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+  }, 2000); // Tự động ẩn sau 2 giây
 }
 
 export function showResetConfirmationOverlay() {

@@ -159,7 +159,7 @@ export function createGrid(gridSize, level = 1) {
 }
 
 /**
- * Hiển thị tất cả ảnh trong 3s rồi ẩn lại nếu chưa matched
+ * Hiển thị tất cả ảnh trong 5s rồi ẩn lại nếu chưa matched
  */
 function revealAndHideTiles() {
   const allImgs = document.querySelectorAll('.tile img');
@@ -177,5 +177,5 @@ function revealAndHideTiles() {
 
     gameState.isLocked = false;
     initLogic();
-  }, 3000);
+  }, 5000);
 }

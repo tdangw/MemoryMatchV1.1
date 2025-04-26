@@ -58,3 +58,4 @@ function createShootingStar() {
 export function startStarShower() {
   setInterval(createShootingStar, 800);
 }
+// Pháo hoa

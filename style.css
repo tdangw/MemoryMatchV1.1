@@ -1550,3 +1550,30 @@ body {
 .hint-timer-text {
   color: #d32f2f;
 }
+.loading-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #1d2b64, #f8cdda);
+  padding: 20px 30px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: pop-in 0.5s ease, shimmer 3s infinite;
+  z-index: 9999;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -48,10 +48,16 @@ export function handleTileClick(tileElement) {
 
     console.log(`[🎁 Bonus] +${bonusPoints} điểm từ ô lẻ ${tileElement.id}`);
     showBonusOverlay(`🎯 Bạn nhận được ${bonusPoints} điểm thưởng!`);
-    checkLevelComplete();
+
+    // ✅ Chờ 0.5 giây rồi mới checkLevelComplete
+    setTimeout(() => {
+      checkLevelComplete();
+    }, 500);
   } else {
     selectedTiles.push({ element: tileElement, imageId });
-    if (selectedTiles.length === 2) checkMatch();
+    if (selectedTiles.length === 2) {
+      checkMatch();
+    }
   }
 }
 
@@ -112,21 +118,56 @@ export function checkLevelComplete() {
   const bonusMatched = bonusTile ? bonusTile.classList.contains('matched') : true;
 
   if (allNormalTiles.length === matchedNormalTiles.length && bonusMatched) {
-    // ✅ Phát âm thanh victory riêng nếu có bật âm
     if (gameState.settings?.sound) {
       sounds.victory.currentTime = 0;
       sounds.victory.play().catch(() => {});
     }
 
-    // Hiển thị overlay như cũ
-    showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`); // tắt âm thanh overlay
+    showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`);
 
-    setTimeout(() => nextLevel(), 600);
+    // ⏳ Chờ overlay ẩn + fade-out grid + loading màn mới
+    setTimeout(() => {
+      fadeOutGrid(() => {
+        showLoadingOverlay(() => {
+          nextLevel();
+        });
+      });
+    }, 1000);
 
-    // Ghi nhận kỷ lục nếu vượt qua
     if (gameState.score > (gameState.highScore || 0)) {
       gameState.highScore = gameState.score;
       localStorage.setItem('highScore', gameState.highScore);
     }
   }
 }
+function fadeOutGrid(callback) {
+  const gridContainer = document.getElementById('grid-container');
+  if (gridContainer) {
+    gridContainer.style.transition = 'opacity 0.6s ease';
+    gridContainer.style.opacity = '0';
+
+    setTimeout(() => {
+      gridContainer.style.opacity = '1'; // Reset lại để chuẩn bị màn mới
+      if (callback) callback();
+    }, 600);
+  } else if (callback) {
+    callback();
+  }
+}
+function showLoadingOverlay(callback) {
+  const overlay = document.createElement('div');
+  overlay.className = 'loading-overlay';
+  overlay.textContent = '🧩 Đang chuẩn bị màn mới...';
+
+  document.body.appendChild(overlay);
+
+  setTimeout(() => {
+    overlay.classList.add('fade-out');
+    setTimeout(() => {
+      document.body.removeChild(overlay);
+      if (callback) callback();
+    }, 300);
+  }, 2000); // Hiển thị loading 2 giây
+}
+
+//
