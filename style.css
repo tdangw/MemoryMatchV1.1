@@ -61,7 +61,7 @@ body {
   border-radius: 10px;
   z-index: 1001;
   position: relative;
-  font-size: 3.4rem; /* hoặc 4rem tùy ý */
+  font-size: 2.4rem; /* hoặc 4rem tùy ý */
 }
 
 #game-title span,
