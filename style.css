@@ -1577,3 +1577,19 @@ body {
     background-position: 0% 50%;
   }
 }
+#firework-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 10000;
+  display: none;
+  filter: blur(1px); /* 🔥 Làm ánh sáng nhoè nhẹ cho đẹp */
+}
+.particle {
+  box-shadow: 0 0 10px rgba(255, 255, 100, 0.9), 0 0 20px rgba(255, 100, 255, 0.7);
+  box-shadow: 0 0 12px rgba(255, 255, 200, 0.9), 0 0 30px rgba(255, 150, 255, 0.7);
+  filter: blur(1px);
+}

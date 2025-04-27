@@ -9,6 +9,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 </head>
 <body>
+  <canvas id="firework-canvas" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:10000;"></canvas>
   <div class="main-wrapper">
     <!-- Game Container -->
     <div id="game-container" style="display: none;">
@@ -20,23 +21,21 @@
             <button id="btn-full-reset" class="icon-btn" title="Xoá dữ liệu">🪄</button>
             <button id="btn-game-settings" class="icon-btn" title="Cài đặt">⚙️</button>
             <button id="btn-shop" class="icon-btn" title="Shop">🛒</button>
-
             <button id="btn-hint" class="icon-btn" title="Gợi ý">🔍<span id="hint">--</span></button>
           </div>
           <div id="game-logo" class="header-title sparkle-text">💫Memory Match💫</div>
           <div class="header-right">
             <span class="info" id="high-score">🥇--</span>
-            <span class="info" id="score-title">⭐<span id="score">0</span></span>
             <span class="info" id="current-level">🧩<span id="level">1</span></span>
+            <span class="info" id="hint">🔍<span id="hint">--</span></span>
+            <span class="info" id="score-title">⭐<span id="score">0</span></span>
             <span class="info" id="timer">⏱️--:--</span>
-            
+          
             <div id="version-info" class="version-icon">ℹ️</div>
-
           </div>
         </div>
       </div>
       <div id="grid-container"></div>
-      <canvas id="firework-canvas" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;"></canvas>
     </div>
 
     <!-- Settings Overlay -->

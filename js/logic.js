@@ -4,6 +4,7 @@
 import { increaseScore, gameState } from './gameState.js';
 import { showBonusOverlay, updateScoreDisplay, showTilePointEffect } from './ui.js';
 import { nextLevel } from './main.js';
+import { startFireworkShow } from './fireworkEffect.js';
 import { sounds } from './sound.js'; // 📦 Tách âm thanh
 
 let selectedTiles = [];
@@ -124,15 +125,15 @@ export function checkLevelComplete() {
     }
 
     showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`);
+    startFireworkShow(3500);
 
-    // ⏳ Chờ overlay ẩn + fade-out grid + loading màn mới
     setTimeout(() => {
       fadeOutGrid(() => {
         showLoadingOverlay(() => {
           nextLevel();
         });
       });
-    }, 1000);
+    }, 3500); // 3 giây pháo hoa + 0.5s chuẩn bị
 
     if (gameState.score > (gameState.highScore || 0)) {
       gameState.highScore = gameState.score;
