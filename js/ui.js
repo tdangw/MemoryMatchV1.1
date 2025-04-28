@@ -61,7 +61,7 @@ export function showBonusOverlay(message) {
     setTimeout(() => document.body.removeChild(overlay), 300);
   }, 1000); // Tự động ẩn sau 1 giây
 }
-
+// Thưởng qua màn
 export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay fade-in';
@@ -69,11 +69,18 @@ export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
   const modal = document.createElement('div');
   modal.className = 'modal slide-down';
   modal.innerHTML = `
-    <h2>🎉 Thưởng qua màn!</h2>
-    <p>⭐+${reward} điểm</p>
-    <p>💡+${hintGain} gợi ý</p>
-    <p>⏱️+${timeBonus} giây</p>
-  `;
+  <div class="reward-container">
+    <h2 id="bonus-title" class="reward-title glow"></h2>
+    <div class="reward-points">⭐ +${reward} điểm</div>
+    <div class="reward-hints">💡 +${hintGain} gợi ý</div>
+    <div class="reward-time">⏱️ +${timeBonus} giây</div>
+  </div>
+`;
+
+  const title = modal.querySelector('#bonus-title');
+  if (title) {
+    title.innerText = `🎉 Level ${gameState.currentLevel}!`;
+  }
 
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
@@ -88,7 +95,7 @@ export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
     overlay.classList.remove('fade-in');
     overlay.classList.add('fade-out');
     setTimeout(() => document.body.removeChild(overlay), 300);
-  }, 2000); // Tự động ẩn sau 2 giây
+  }, 3000); // Tự động ẩn sau 3 giây
 }
 
 export function showResetConfirmationOverlay() {
@@ -197,7 +204,6 @@ export function showTilePointEffect(tileElement, text = '') {
   const effect = document.createElement('div');
   effect.className = 'tile-point-effect';
 
-  // Tự chuyển số thành dạng +12
   if (typeof text === 'number') {
     effect.textContent = `+${text}`;
   } else {
@@ -205,8 +211,11 @@ export function showTilePointEffect(tileElement, text = '') {
   }
 
   const rect = tileElement.getBoundingClientRect();
-  effect.style.left = `${rect.left + rect.width / 2}px`;
-  effect.style.top = `${rect.top}px`;
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  effect.style.left = `${centerX}px`;
+  effect.style.top = `${centerY}px`;
 
   document.body.appendChild(effect);
 
@@ -214,9 +223,10 @@ export function showTilePointEffect(tileElement, text = '') {
     effect.classList.add('fade-out');
     setTimeout(() => {
       effect.remove();
-    }, 400);
+    }, 500); // thời gian remove sau hiệu ứng fade-out
   }, 1600);
 }
+
 // Shop
 export function showShopMessage(message) {
   const overlay = document.createElement('div');

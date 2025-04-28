@@ -48,7 +48,8 @@ export function handleTileClick(tileElement) {
     tileElement.classList.add('matched');
 
     console.log(`[🎁 Bonus] +${bonusPoints} điểm từ ô lẻ ${tileElement.id}`);
-    showBonusOverlay(`🎯 Bạn nhận được ${bonusPoints} điểm thưởng!`);
+    // showBonusOverlay(`🎯 Bạn nhận được ${bonusPoints} điểm thưởng!`); tạm không dùng overlay này
+    showTilePointEffect(tileElement, `🎯 +${bonusPoints}`);
 
     // ✅ Chờ 0.5 giây rồi mới checkLevelComplete
     setTimeout(() => {
@@ -62,9 +63,7 @@ export function handleTileClick(tileElement) {
   }
 }
 
-/**
- * So khớp 2 tile được chọn
- */
+// So khớp 2 tile được chọn
 function checkMatch() {
   const [first, second] = selectedTiles;
 
@@ -74,7 +73,7 @@ function checkMatch() {
     first.element.classList.add('matched');
     second.element.classList.add('matched');
 
-    const matchPoints = 2;
+    const matchPoints = 2; // Số điểm cộng khi match
     increaseScore(matchPoints);
     updateScoreDisplay(gameState.score);
     showTilePointEffect(second.element, `+${matchPoints} points`);
@@ -124,7 +123,7 @@ export function checkLevelComplete() {
       sounds.victory.play().catch(() => {});
     }
 
-    showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`);
+    // showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`); tạm không dùng overlay
     startFireworkShow(3500);
 
     setTimeout(() => {
@@ -168,7 +167,7 @@ function showLoadingOverlay(callback) {
       document.body.removeChild(overlay);
       if (callback) callback();
     }, 300);
-  }, 2000); // Hiển thị loading 2 giây
+  }, 1000); // Hiển thị loading 1 giây
 }
 
 //

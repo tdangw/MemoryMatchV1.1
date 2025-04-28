@@ -176,14 +176,26 @@ button:active {
 }
 
 .modal {
-  background-color: #ffffff;
-  padding: 24px 32px;
-  border-radius: 12px;
-  width: 300px;
-  text-align: center;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  animation: dropIn 0.4s ease;
+  background: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.5s ease;
 }
+
+.overlay.fade-in .modal {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.modal.slide-up {
+  transform: scale(0.6);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
 .modal h2 {
   margin-bottom: 10px;
   font-size: 1.4rem;
@@ -1592,4 +1604,98 @@ body {
   box-shadow: 0 0 10px rgba(255, 255, 100, 0.9), 0 0 20px rgba(255, 100, 255, 0.7);
   box-shadow: 0 0 12px rgba(255, 255, 200, 0.9), 0 0 30px rgba(255, 150, 255, 0.7);
   filter: blur(1px);
+}
+/* */
+.reward-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #ffffff;
+  text-shadow: 0 0 10px #00ffe0, 0 0 20px #00d1ff, 0 0 30px #0088ff;
+}
+.reward-container {
+  background: linear-gradient(135deg, #1e3c72, #2a5298); /* gradient xanh */
+  padding: 35px 55px;
+  border-radius: 20px;
+  color: #ffffff;
+  box-shadow: 0 0 30px rgba(0, 136, 255, 0.7);
+  animation: pop 0.6s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.reward-points,
+.reward-hints,
+.reward-time {
+  margin-top: 12px;
+  font-size: 24px;
+  animation: floatUp 0.8s ease forwards;
+  opacity: 0;
+}
+
+.reward-hints {
+  animation-delay: 0.2s;
+}
+
+.reward-time {
+  animation-delay: 0.4s;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.bonus-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* 🛠 Màu đen mờ nền đúng */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.bonus-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+/**/
+.tile-point-effect {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  color: #00ffff;
+  font-size: 28px; /* 🔥 To hơn để nổi bật */
+  font-weight: bold;
+  text-shadow: 0 0 10px #00ffe0, 0 0 15px #00d1ff;
+  pointer-events: none;
+  z-index: 9999;
+  animation: float-pop 1.2s ease-out forwards;
+  white-space: nowrap;
+}
+.tile-point-effect.fade-out {
+  opacity: 0;
+  transform: translate(-50%, -100px);
+  transition: all 0.6s ease;
 }

@@ -1,8 +1,7 @@
-// fireworkEffect.js
-
-// Chuẩn hóa requestAnimFrame để vẽ mượt
+// fireworkEffect.js - bản chuẩn gốc pháo hoa
 /* global gameState */
 
+// Tối ưu requestAnimationFrame
 const requestAnimFrame = (function () {
   return (
     window.requestAnimationFrame ||
@@ -14,7 +13,7 @@ const requestAnimFrame = (function () {
   );
 })();
 
-// Khai báo biến chính
+// Các biến toàn cục
 let canvas,
   ctx,
   fireworks = [],
@@ -22,17 +21,18 @@ let canvas,
   hue = 120;
 let timerTotal = 500,
   timerTick = 0;
-
-// Tính khoảng cách hai điểm
-function calculateDistance(p1x, p1y, p2x, p2y) {
-  const xDistance = p1x - p2x;
-  const yDistance = p1y - p2y;
-  return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
-}
+let isFireworkActive = false;
 
 // Random trong khoảng
 function random(min, max) {
   return Math.random() * (max - min) + min;
+}
+
+// Khoảng cách 2 điểm
+function calculateDistance(p1x, p1y, p2x, p2y) {
+  const xDistance = p1x - p2x;
+  const yDistance = p1y - p2y;
+  return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
 }
 
 // Firework class
@@ -128,20 +128,17 @@ class Particle {
   }
 }
 
-// Tạo particles khi pháo nổ
-function createParticles(x, y, count = 20) {
-  // tăng lên nếu cần pháo to
-  let particleCount = count;
+// Tạo particles nổ
+function createParticles(x, y) {
+  let particleCount = 20;
   while (particleCount--) {
     particles.push(new Particle(x, y));
   }
 }
-function createBigFirework() {
-  createParticles(canvas.width / 2, canvas.height / 2, 50); // Pháo to với 50 particles
-}
 
-// Loop animation
+// Vòng lặp animation
 function loop() {
+  if (!isFireworkActive) return;
   requestAnimFrame(loop);
 
   hue += 0.5;
@@ -165,24 +162,22 @@ function loop() {
   if (timerTick >= timerTotal) {
     timerTick = 0;
   } else {
-    var temp = timerTick % 400;
+    const temp = timerTick % 400;
     if (temp <= 15) {
       fireworks.push(new Firework(100, canvas.height, random(190, 200), random(90, 100)));
       fireworks.push(
         new Firework(canvas.width - 100, canvas.height, random(canvas.width - 200, canvas.width - 190), random(90, 100))
       );
     }
-
-    var temp3 = temp / 10;
+    const temp3 = temp / 10;
     if (temp > 319) {
       fireworks.push(new Firework(300 + (temp3 - 31) * 100, canvas.height, 300 + (temp3 - 31) * 100, 200));
     }
-
     timerTick++;
   }
 }
 
-// Hàm public gọi từ logic.js
+// Bắt đầu show pháo hoa
 export function startFireworkShow(duration = 3000) {
   canvas = document.getElementById('firework-canvas');
   if (!canvas) return;
@@ -196,25 +191,26 @@ export function startFireworkShow(duration = 3000) {
   particles = [];
   timerTick = 0;
 
-  // Đặt màu theo level hiện tại nếu cần
   if (typeof gameState !== 'undefined') {
     if (gameState.currentLevel <= 5) {
-      hue = 50; // vàng cam
+      hue = 50;
     } else if (gameState.currentLevel <= 10) {
-      hue = 200; // xanh dương
+      hue = 200;
     } else if (gameState.currentLevel <= 15) {
-      hue = 320; // hồng tím
+      hue = 320;
     } else {
-      hue = 120; // xanh lá mặc định
+      hue = 120;
     }
   }
 
+  isFireworkActive = true;
   loop();
-  createBigFirework(); // 🎆 Pháo chùm to giữa màn hình
 
   setTimeout(() => {
+    isFireworkActive = false;
     fireworks = [];
     particles = [];
     canvas.style.display = 'none';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }, duration);
 }
