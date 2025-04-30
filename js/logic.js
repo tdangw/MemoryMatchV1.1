@@ -2,9 +2,9 @@
 // chức năng của logic.js là xử lý logic của trò chơi, bao gồm việc xử lý sự kiện khi người chơi nhấp vào ô, kiểm tra xem hai ô có khớp nhau hay không, và kiểm tra xem người chơi đã hoàn thành cấp độ hay chưa. Nó cũng bao gồm các chức năng để khởi tạo logic và xử lý âm thanh khi người chơi tương tác với trò chơi.
 
 import { increaseScore, gameState } from './gameState.js';
-import { showBonusOverlay, updateScoreDisplay, showTilePointEffect } from './ui.js';
+import { updateScoreDisplay, showTilePointEffect, updateTimerDisplay, highlightTarget } from './ui.js';
 import { nextLevel } from './main.js';
-import { startFireworkShow } from './fireworkEffect.js';
+import { startFireworkShow, triggerVictoryFireworks } from './fireworkEffect.js';
 import { sounds } from './sound.js'; // 📦 Tách âm thanh
 
 let selectedTiles = [];
@@ -48,8 +48,7 @@ export function handleTileClick(tileElement) {
     tileElement.classList.add('matched');
 
     console.log(`[🎁 Bonus] +${bonusPoints} điểm từ ô lẻ ${tileElement.id}`);
-    // showBonusOverlay(`🎯 Bạn nhận được ${bonusPoints} điểm thưởng!`); tạm không dùng overlay này
-    showTilePointEffect(tileElement, `🎯 +${bonusPoints}`);
+    showTilePointEffect(tileElement, `🎯 +${bonusPoints} điểm`);
 
     // ✅ Chờ 0.5 giây rồi mới checkLevelComplete
     setTimeout(() => {
@@ -73,10 +72,11 @@ function checkMatch() {
     first.element.classList.add('matched');
     second.element.classList.add('matched');
 
-    const matchPoints = 2; // Số điểm cộng khi match
+    const matchPoints = 2; // Cộng điểm khi match
     increaseScore(matchPoints);
     updateScoreDisplay(gameState.score);
-    showTilePointEffect(second.element, `+${matchPoints} points`);
+    showTilePointEffect(second.element, `+${matchPoints} điểm`);
+    highlightTarget('#score-title');
 
     if (gameState.settings?.sound) {
       sounds.match.currentTime = 0;
@@ -88,10 +88,29 @@ function checkMatch() {
   } else {
     first.element.classList.add('wrong');
     second.element.classList.add('wrong');
+    highlightTarget('#score-title', true);
 
     if (gameState.settings?.sound) {
       sounds.wrong.currentTime = 0;
       sounds.wrong.play().catch(() => {});
+    }
+
+    // ➖ Trừ điểm hoặc thời gian nếu điểm = 0
+    if (gameState.score > 0) {
+      const penalty = 1;
+      gameState.score = Math.max(0, gameState.score - penalty);
+      updateScoreDisplay(gameState.score);
+      showTilePointEffect(second.element, `-${penalty} điểm`);
+    } else {
+      // ✅ Bắt đầu bảo vệ thời gian
+      const raw = Number(gameState.remainingTime);
+      const currentTime = Number.isFinite(raw) ? raw : 180;
+      const newTime = Math.max(0, currentTime - 1);
+
+      gameState.remainingTime = newTime;
+      updateTimerDisplay(newTime);
+      showTilePointEffect(second.element, '-⏱️1s');
+      highlightTarget('#timer', true);
     }
 
     setTimeout(() => {
@@ -122,10 +141,9 @@ export function checkLevelComplete() {
       sounds.victory.currentTime = 0;
       sounds.victory.play().catch(() => {});
     }
-
-    // showBonusOverlay(`🎉 Bạn đã hoàn thành Level ${gameState.currentLevel}!`); tạm không dùng overlay
+    // 🔥 Hiệu ứng pháo hoa Particle đẹp mắt
+    triggerVictoryFireworks(3); // hoặc 2, 4 tùy cấp độ
     startFireworkShow(3500);
-
     setTimeout(() => {
       fadeOutGrid(() => {
         showLoadingOverlay(() => {

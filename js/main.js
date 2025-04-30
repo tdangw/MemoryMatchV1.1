@@ -1,5 +1,6 @@
 // main.js - Quản lý game chính
 // Chức năng của main.js là khởi tạo game, xử lý sự kiện và quản lý trạng thái game. Nó sẽ gọi các hàm từ các module khác để thực hiện các chức năng cụ thể như tạo lưới, xử lý âm thanh, cập nhật giao diện người dùng, v.v.
+import { showDifficultyOverlay, createMainMenu } from './mainmenu.js';
 import { getGridSizeByLevel } from './utils.js'; // Tính toán kích thước lưới theo level
 import { createGrid } from './grid.js';
 import {
@@ -10,10 +11,12 @@ import {
   showBonusOverlay,
   showLevelRewardOverlay,
   updateHighScoreDisplay,
+  showReturnToMenuOverlay,
+  showResetConfirmationOverlay,
+  highlightTarget,
 } from './ui.js';
 import { gameState, resetGame, increaseScore } from './gameState.js';
 import { checkLevelComplete, initLogic } from './logic.js';
-import { createMainMenu } from './mainmenu.js';
 import { showSettingsPanel } from './settings.js';
 
 document.getElementById('btn-game-settings')?.addEventListener('click', () => {
@@ -55,7 +58,7 @@ export function initializeLevel(level) {
   initLogic();
   startCountdown();
 
-  if (level > 1) {
+  if (level >= 1) {
     handleLevelReward();
   }
 }
@@ -77,29 +80,95 @@ function startCountdown() {
 }
 
 function handleTimeUp() {
-  showBonusOverlay('⏰ Hết giờ! Bạn đã thua!');
+  gameState.isLocked = true;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay fade-in';
+
+  const modal = document.createElement('div');
+  modal.className = 'modal slide-down';
+  modal.innerHTML = `
+    <h2 class="overlay-title glow-text">⏰ Hết giờ!</h2>
+    <p>Bạn đã thua! Bạn có muốn chơi lại không?:</p>
+    <div class="button-row" style="margin-top: 20px;">
+      <button class="confirm-btn">🔄 Chơi lại</button>
+      <button class="menu-btn">❌ Menu</button> <!-- 👈 Tên class riêng -->
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  if (gameState.settings?.sound) {
+    const audio = document.getElementById('bg-music');
+    if (audio) audio.pause();
+
+    import('./sound.js').then(({ sounds }) => {
+      sounds.defeat.currentTime = 0;
+      sounds.defeat.play().catch(() => {});
+    });
+  }
+
+  // 🔁 Chơi lại: chọn lại chế độ chơi
+  modal.querySelector('.confirm-btn').onclick = () => {
+    overlay.remove();
+    gameState.fromDefeat = true; // ✅ Đánh dấu đang gọi từ trạng thái thua
+    showDifficultyOverlay(true); // gọi lại chọn chế độ chơi
+  };
+
+  // ❌ Menu: reset và quay lại menu chính (class riêng để tránh trùng)
+  modal.querySelector('.menu-btn').onclick = () => {
+    overlay.remove();
+    resetGame();
+
+    const gameContainer = document.getElementById('game-container');
+    if (gameContainer) gameContainer.style.display = 'none';
+
+    createMainMenu();
+  };
 }
 
 // 🎁 Thưởng qua màn
 function handleLevelReward() {
+  const hintCount = gameState.hints;
   const level = gameState.currentLevel;
   const remainingTime = gameState.remainingTime;
-  const base = 5;
-  const levelBonus = level * 2;
-  const timeBonus = Math.floor(remainingTime / 10);
-  const hintBonus = Math.max(0, 3) * 10;
 
-  const reward = base + levelBonus + timeBonus + hintBonus;
-  const hintGain = Math.ceil(level / 2);
+  let base = 10;
+  let levelBonus = level * 2;
+  let timeBonus = Math.floor(remainingTime / 10);
+  let hintBonus = hintCount * 2;
+  let reward = 0;
+  let hintGain = 1;
+  let extraTime = 30 + Math.floor(level / 5) * 5; // Cứ mỗi 5 level tăng thêm 5s
 
-  increaseScore(reward);
-  gameState.hints += hintGain;
-  gameState.remainingTime += 60;
+  if (level === 1) {
+    // 🎯 Nếu là Level 1 ➔ Chỉnh riêng phần thưởng
+    base = 0;
+    levelBonus = 0;
+    timeBonus = 0;
+    hintBonus = 0;
+    reward = 0; // Không cộng điểm
+    hintGain = 0; // Không cộng thêm lượt gợi ý
+    extraTime = 0; // Không cộng thêm thời gian
+  } else {
+    reward = base + levelBonus + timeBonus + hintBonus;
+  }
+
+  if (reward > 0) {
+    increaseScore(reward);
+  }
+  if (hintGain > 0) {
+    gameState.hints += hintGain;
+  }
+  if (extraTime > 0) {
+    gameState.remainingTime += extraTime;
+  }
 
   updateHintDisplay(gameState.hints);
   updateTimerDisplay(gameState.remainingTime);
 
-  showLevelRewardOverlay({ reward, hintGain, timeBonus: 60 });
+  showLevelRewardOverlay({ reward, hintGain, timeBonus: extraTime });
 }
 
 // Chuyển màn
@@ -134,6 +203,7 @@ function handleHintClick() {
       simulateTileMatch(t1, t2);
       gameState.hints--;
       updateHintDisplay(gameState.hints);
+      highlightTarget('#hint-count', true);
       return;
     }
   }
@@ -158,8 +228,10 @@ function simulateTileMatch(tile1, tile2) {
 const restartBtn = document.getElementById('btn-restart');
 if (restartBtn) {
   restartBtn.onclick = () => {
+    // 📌 Thay vì reset luôn → hỏi lại chế độ chơi
     resetGame();
-    initializeLevel(1);
+    document.getElementById('game-container')?.style.setProperty('display', 'none');
+    showDifficultyOverlay(true); // ✅ truyền true vì gọi từ trong game
   };
 }
 
@@ -169,15 +241,12 @@ if (hintBtn) {
 }
 
 const fullResetBtn = document.getElementById('btn-full-reset');
-import { showResetConfirmationOverlay } from './ui.js';
 
 if (fullResetBtn) {
   fullResetBtn.onclick = () => {
     showResetConfirmationOverlay();
   };
 }
-
-import { showReturnToMenuOverlay } from './ui.js';
 
 const menuBtn = document.getElementById('btn-menu');
 if (menuBtn) {

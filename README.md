@@ -77,4 +77,8 @@
 - Thêm hiệu ứng cộng điểm khi match
 - Thêm mô tả phiên bản ở góc dưới bên phải
 - Thêm Shop
-"# MemoryMatchV1.1" 
+  "# MemoryMatchV1.1"
+- Cải thiện các hiệu ứng giao diện và thông báo, giao diện menu
+- Thêm hiệu ứng pháo hoa khi thắng mỗi màn
+- Thêm hiệu ứng trừ điểm
+- Cập nhật một số hiệu ứng khác

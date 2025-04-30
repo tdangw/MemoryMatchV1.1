@@ -1,8 +1,8 @@
 // 📦 Trạng thái toàn cục của game
 import { updateScoreDisplay, updateHighScoreDisplay } from './ui.js';
 const defaultHints = 3; // Giá trị mặc định của lượt gợi ý
-const remainingTime = 300;
-const defaultScore = 100;
+const remainingTime = 180;
+const defaultScore = 0;
 export const gameState = {
   currentLevel: 1,
   score: defaultScore,
@@ -15,7 +15,9 @@ export const gameState = {
     sound: false,
     bgMusic: 'none',
   },
+  fromDefeat: false, // ➕ biến cờ xác định đang gọi từ trạng thái "thua"
 };
+gameState._timeRunningOutPlayed = false;
 
 // 🔄 Reset toàn bộ game về trạng thái ban đầu
 export function resetGame() {

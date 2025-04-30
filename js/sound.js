@@ -10,6 +10,7 @@ export const sounds = {
   victory: new Audio('assets/sounds/victory.mp3'), // Âm thanh cho chiến thắng
   defeat: new Audio('assets/sounds/defeat.mp3'), // Âm thanh cho thất bại
   confirm: new Audio('assets/sounds/confirm.mp3'),
+  timerunningout: new Audio('assets/sounds/time-running-out.mp3'),
 };
 
 // Thiết lập âm lượng chung (tuỳ chỉnh)

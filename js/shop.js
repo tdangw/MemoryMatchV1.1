@@ -105,7 +105,7 @@ function handleBuyItem(item) {
     case 'hint':
       gameState.hints += item.value;
       updateHintDisplay(gameState.hints);
-      animateIconToTarget('🔍', '#hint');
+      animateIconToTarget('🔍', '#hint-count');
       showShopMessage(`+${item.value} gợi ý`);
       break;
     case 'reveal-random':

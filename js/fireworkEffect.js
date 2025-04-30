@@ -162,16 +162,14 @@ function loop() {
   if (timerTick >= timerTotal) {
     timerTick = 0;
   } else {
-    const temp = timerTick % 400;
+    const temp = timerTick % 175;
     if (temp <= 15) {
-      fireworks.push(new Firework(100, canvas.height, random(190, 200), random(90, 100)));
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 3;
+
       fireworks.push(
-        new Firework(canvas.width - 100, canvas.height, random(canvas.width - 200, canvas.width - 190), random(90, 100))
+        new Firework(centerX, canvas.height, random(centerX - 10, centerX + 10), random(centerY - 10, centerY + 10))
       );
-    }
-    const temp3 = temp / 10;
-    if (temp > 319) {
-      fireworks.push(new Firework(300 + (temp3 - 31) * 100, canvas.height, 300 + (temp3 - 31) * 100, 200));
     }
     timerTick++;
   }
@@ -213,4 +211,41 @@ export function startFireworkShow(duration = 3000) {
     canvas.style.display = 'none';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }, duration);
+}
+// Pháo hoa đợt 2
+const PARTICLES_PER_FIREWORK = 150;
+const BASE_PARTICLE_SPEED = 0.6;
+
+export function triggerVictoryFireworks(count = 3) {
+  let bursts = 0;
+
+  const interval = setInterval(() => {
+    const speed = Math.random() * 2 + BASE_PARTICLE_SPEED;
+    const x = canvas.width / 2 + (Math.random() * 160 - 80);
+    const y = canvas.height / 3 + (Math.random() * 60 - 30);
+
+    let red = ~~(Math.random() * 255);
+    let green = ~~(Math.random() * 255);
+    let blue = ~~(Math.random() * 255);
+
+    red = red < 150 ? red + 150 : red;
+    green = green < 150 ? green + 150 : green;
+    blue = blue < 150 ? blue + 150 : blue;
+
+    let maxSpeed = speed;
+
+    for (let i = 0; i < PARTICLES_PER_FIREWORK; i++) {
+      const particle = new Particle(x, y, red, green, blue, speed);
+      particles.push(particle);
+      maxSpeed = speed > maxSpeed ? speed : maxSpeed;
+    }
+
+    for (let i = 0; i < 40; i++) {
+      const particle = new Particle(x, y, red, green, blue, maxSpeed, true);
+      particles.push(particle);
+    }
+
+    bursts++;
+    if (bursts >= count) clearInterval(interval);
+  }, 500);
 }

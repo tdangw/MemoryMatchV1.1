@@ -1,5 +1,5 @@
 import { showSettingsPanel } from './settings.js';
-import { gameState } from './gameState.js';
+import { gameState, resetGame } from './gameState.js';
 import { initializeLevel } from './main.js';
 export const VERSION = 'v1.1';
 function setupVersionInfo() {
@@ -22,8 +22,9 @@ function setupVersionInfo() {
     <li>✨ Thêm hiệu ứng cộng điểm</li>
     <li>⚡ Tối ưu game mượt hơn</li>
     <li>🛒 Thêm Shop</li>
+    <li>🎉 Cải thiện giao diện và hiệu ứng</li>
   </ul>
-  <button class="settings-btn" style="margin-top: 10px;">Đóng</button>
+  <button class="version-btn" style="margin-top: 10px;">Đóng 123</button>
 `;
 
     document.body.appendChild(overlay);
@@ -52,7 +53,7 @@ export function showInfoModal(title, message) {
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'settings-btn';
-  closeBtn.textContent = 'Đóng';
+  closeBtn.textContent = 'Đóng AA';
 
   closeBtn.onclick = () => {
     modal.classList.add('slide-up');
@@ -158,7 +159,7 @@ export function createMainMenu() {
 /**
  * Hiển thị overlay chọn chế độ chơi (popup gọn)
  */
-export function showDifficultyOverlay() {
+export function showDifficultyOverlay(fromGame = false) {
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
 
@@ -171,28 +172,69 @@ export function showDifficultyOverlay() {
     <button class="difficulty-btn" data-mode="easy">🟢 Dễ</button>
     <button class="difficulty-btn" data-mode="normal">🟡 Bình thường</button>
     <button class="difficulty-btn" data-mode="hard">🔴 Khó</button>
-    <button id="cancel-difficulty" class="cancel-btn">❌ Hủy</button>
+    <button id="cancel-difficulty" class="cancel-btn">❌ Hủy A</button>
   `;
 
   overlay.appendChild(popup);
   document.body.appendChild(overlay);
 
+  // 🎮 Gán label đúng ngữ cảnh
+  updateCancelButtonLabel(fromGame);
+
+  // 📌 Gán sự kiện chọn chế độ
   popup.querySelectorAll('.difficulty-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
+      gameState.fromDefeat = false; // ✅ reset cờ
+
+      resetGame(); // 🧹 reset sạch state
+
       const mode = btn.dataset.mode;
-      gameState.settings.mode = mode;
+      gameState.settings.mode = mode; // ✅ gán sau reset
       console.log('🔧 Chế độ chơi:', mode);
-      initializeLevel(1);
+
+      initializeLevel(1); // 🟢 gọi tạo lưới đúng chế độ
       document.body.removeChild(overlay);
     });
   });
 
-  popup.querySelector('#cancel-difficulty')?.addEventListener('click', () => {
-    document.body.removeChild(overlay);
+  // 📌 Gán hành vi cancel tùy theo ngữ cảnh
+  const cancelBtn = popup.querySelector('#cancel-difficulty');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      handleCancelAction(fromGame);
+    });
+  }
+}
+
+function updateCancelButtonLabel(fromGame) {
+  const cancelBtn = document.getElementById('cancel-difficulty');
+  if (!cancelBtn) return;
+
+  if (fromGame && gameState.fromDefeat) {
+    cancelBtn.textContent = '🏠 Menu';
+  } else if (fromGame) {
+    cancelBtn.textContent = '➖ Tiếp tục chơi';
+  } else {
+    cancelBtn.textContent = '❌❌ Hủy 11';
+  }
+}
+
+function handleCancelAction(fromGame) {
+  if (fromGame && gameState.fromDefeat) {
+    resetGame();
+    const gameContainer = document.getElementById('game-container');
+    if (gameContainer) gameContainer.style.display = 'none';
+    createMainMenu();
+    gameState.fromDefeat = false; // Reset cờ
+  } else if (fromGame) {
+    const gameContainer = document.getElementById('game-container');
+    if (gameContainer) gameContainer.style.display = 'flex';
+  } else {
     if (!document.getElementById('menu-container')) {
       createMainMenu();
     }
-  });
+  }
 }
 
 // ==========================

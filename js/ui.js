@@ -30,9 +30,24 @@ export function updateHintDisplay(hints) {
 
 export function updateTimerDisplay(seconds) {
   if (!timerElement) return;
+
   const m = String(Math.floor(seconds / 60)).padStart(2, '0');
   const s = String(seconds % 60).padStart(2, '0');
   timerElement.textContent = `⏱️${m}:${s}`;
+
+  // 🔴 Cảnh báo khi còn <= 10s
+  if (seconds <= 10) {
+    timerElement.classList.add('timer-warning');
+
+    if (gameState.settings?.sound && !gameState._timeRunningOutPlayed) {
+      sounds.timerunningout.currentTime = 0;
+      sounds.timerunningout.play().catch(() => {});
+      gameState._timeRunningOutPlayed = true;
+    }
+  } else {
+    timerElement.classList.remove('timer-warning');
+    gameState._timeRunningOutPlayed = false;
+  }
 }
 
 export function showBonusOverlay(message) {
@@ -63,88 +78,77 @@ export function showBonusOverlay(message) {
 }
 // Thưởng qua màn
 export function showLevelRewardOverlay({ reward, hintGain, timeBonus }) {
+  // 🔄 Xoá overlay cũ nếu còn
+  const existing = document.querySelector('.level-reward-overlay');
+  if (existing) existing.remove();
+
+  // Nền overlay mờ
   const overlay = document.createElement('div');
-  overlay.className = 'overlay fade-in';
+  overlay.className = 'level-reward-overlay fade-in';
 
-  const modal = document.createElement('div');
-  modal.className = 'modal slide-down';
-  modal.innerHTML = `
-  <div class="reward-container">
-    <h2 id="bonus-title" class="reward-title glow"></h2>
+  // Layout trực tiếp, không bọc trong .modal
+  const container = document.createElement('div');
+  container.className = 'reward-container direct-layout';
+  container.innerHTML = `
+    <h2 class="reward-title glow">🎉 Level ${gameState.currentLevel}!</h2>
     <div class="reward-points">⭐ +${reward} điểm</div>
-    <div class="reward-hints">💡 +${hintGain} gợi ý</div>
+    <div class="reward-hints">🔍 +${hintGain} gợi ý</div>
     <div class="reward-time">⏱️ +${timeBonus} giây</div>
-  </div>
-`;
+  `;
 
-  const title = modal.querySelector('#bonus-title');
-  if (title) {
-    title.innerText = `🎉 Level ${gameState.currentLevel}!`;
-  }
-
-  overlay.appendChild(modal);
+  overlay.appendChild(container);
   document.body.appendChild(overlay);
 
+  // Phát âm thanh
   if (gameState.settings?.sound) {
     sounds.bonus.currentTime = 0;
     sounds.bonus.play().catch(() => {});
   }
 
+  // Tự động ẩn overlay
   setTimeout(() => {
-    modal.classList.add('slide-up');
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    setTimeout(() => document.body.removeChild(overlay), 300);
-  }, 3000); // Tự động ẩn sau 3 giây
+    overlay.classList.replace('fade-in', 'fade-out');
+    setTimeout(() => overlay.remove(), 400);
+  }, 3000);
 }
 
 export function showResetConfirmationOverlay() {
-  const existing = document.getElementById('reset-overlay');
-  if (existing) existing.remove();
+  document.querySelector('.reset-overlay')?.remove();
 
   const overlay = document.createElement('div');
-  overlay.id = 'reset-overlay';
-  overlay.className = 'overlay fade-in';
+  overlay.className = 'reset-overlay fade-in';
 
-  const modal = document.createElement('div');
-  modal.className = 'modal slide-down';
-  modal.innerHTML = `
+  const box = document.createElement('div');
+  box.className = 'reset-box';
+  box.innerHTML = `
     <h2>📛 Xác nhận</h2>
     <p>Bạn có chắc muốn xoá điểm kỷ lục không?</p>
     <div class="button-row">
       <button class="confirm-btn">✅ Đồng ý</button>
-      <button class="cancel-btn">❌ Huỷ</button>
+      <button class="cancel-btn">❌ Huỷ c</button>
     </div>
   `;
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 
   if (gameState.settings?.sound) {
     sounds.overlay.currentTime = 0;
     sounds.overlay.play().catch(() => {});
   }
 
-  modal.querySelector('.confirm-btn').onclick = () => {
-    if (gameState.settings?.sound) {
-      sounds.confirm.currentTime = 0;
-      sounds.confirm.play().catch(() => {});
-    }
+  box.querySelector('.confirm-btn').onclick = () => {
+    sounds.confirm?.play().catch(() => {});
     localStorage.removeItem('highScore');
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    setTimeout(() => {
-      overlay.remove();
-      location.reload();
-    }, 1500);
+    overlay.classList.replace('fade-in', 'fade-out');
+    setTimeout(() => location.reload(), 1000);
   };
 
-  modal.querySelector('.cancel-btn').onclick = () => {
-    modal.classList.add('slide-up');
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
+  box.querySelector('.cancel-btn').onclick = () => {
+    box.classList.add('slide-up');
+    overlay.classList.replace('fade-in', 'fade-out');
     setTimeout(() => overlay.remove(), 300);
   };
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
 }
 
 export function showReturnToMenuOverlay() {
@@ -162,7 +166,7 @@ export function showReturnToMenuOverlay() {
     <p>Tiến trình hiện tại sẽ bị mất.<br>Bạn có chắc không?</p>
     <div class="button-row">
       <button class="confirm-btn">✅ Đồng ý</button>
-      <button class="cancel-btn">❌ Huỷ</button>
+      <button class="cancel-btn">❌ Huỷ b</button>
     </div>
   `;
 
@@ -202,12 +206,15 @@ export function showReturnToMenuOverlay() {
  */
 export function showTilePointEffect(tileElement, text = '') {
   const effect = document.createElement('div');
-  effect.className = 'tile-point-effect';
+  effect.className = 'tile-point-effect'; // Giữ base class luôn luôn
 
   if (typeof text === 'number') {
     effect.textContent = `+${text}`;
   } else {
     effect.textContent = text;
+    if (text.startsWith('-')) {
+      effect.classList.add('tile-point-effect-negative'); // ➡️ Chỉ thêm nếu là điểm trừ
+    }
   }
 
   const rect = tileElement.getBoundingClientRect();
@@ -223,7 +230,7 @@ export function showTilePointEffect(tileElement, text = '') {
     effect.classList.add('fade-out');
     setTimeout(() => {
       effect.remove();
-    }, 500); // thời gian remove sau hiệu ứng fade-out
+    }, 500);
   }, 1600);
 }
 
@@ -273,13 +280,19 @@ export function animateIconToTarget(iconText, targetSelector) {
     highlightTarget(targetSelector); // ✨ gọi hiệu ứng sáng
   }, 800);
 }
-export function highlightTarget(selector) {
+export function highlightTarget(selector, isNegative = false) {
   const el = document.querySelector(selector);
   if (!el) return;
 
   el.classList.add('highlight-effect');
-  setTimeout(() => el.classList.remove('highlight-effect'), 1000);
+  if (isNegative) el.classList.add('highlight-negative');
+
+  setTimeout(() => {
+    el.classList.remove('highlight-effect');
+    if (isNegative) el.classList.remove('highlight-negative');
+  }, 1000);
 }
+
 // Hiển thị thời gian đếm ngược khi mua gợi ý
 export function showRevealTimerNextToHint(duration = 5) {
   const hintEl = document.getElementById('hint');

@@ -1,0 +1,81 @@
+/* ✨ Animation mở popup */
+@keyframes popup-fade-in {
+  0% {
+    transform: scale(0.8) translateY(-20px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ✨ Animation đóng popup */
+@keyframes popup-fade-out {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.8) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.modal {
+  animation: popup-fade-in 0.4s ease forwards;
+}
+
+.modal.fade-out {
+  animation: popup-fade-out 0.4s ease forwards;
+}
+
+/* Overlay thông báo khi thua */
+.overlay-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: table;
+  color: white;
+  background: linear-gradient(to right, #1565c0, #1e88e5);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  animation: slide-down 0.5s ease-out;
+}
+
+/* Hiệu ứng glow */
+.glow-text {
+  animation: glow-pulse 2s infinite;
+}
+
+@keyframes glow-pulse {
+  0% {
+    text-shadow: 0 0 4px #fff, 0 0 10px #2196f3;
+  }
+
+  50% {
+    text-shadow: 0 0 12px #fff, 0 0 20px #42a5f5;
+  }
+
+  100% {
+    text-shadow: 0 0 4px #fff, 0 0 10px #2196f3;
+  }
+}
+
+/* Slide hiệu ứng vào */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

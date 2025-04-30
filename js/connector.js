@@ -1,14 +1,8 @@
 // connector.js - Kết nối màn hình menu với game
-
+import { initializeLevel } from './main.js';
 import { resetGame, gameState } from './gameState.js';
 // import { createGrid } from './grid.js';
-import {
-  showGameUI,
-  showMainMenu,
-  updateLevelDisplay,
-  updateScoreDisplay,
-} from './ui.js';
-import { initializeLevel } from './main.js'; // ✅ dùng chuẩn flow mới
+import { showGameUI, showMainMenu, updateLevelDisplay, updateScoreDisplay } from './ui.js';
 
 /**
  * Hàm khởi động game khi người chơi bấm "Bắt đầu"

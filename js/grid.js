@@ -115,8 +115,8 @@ export function createGrid(gridSize, level = 1) {
 
     const img = document.createElement('img');
     const imageLevel = level <= 12 ? level : 13;
-    img.src = `assets/images/level${imageLevel}/Pikachu (${imageId}).png`;
-    img.alt = `Pikachu ${imageId}`;
+    img.src = `assets/images/level${imageLevel}/MM-image (${imageId}).png`;
+    img.alt = `MM-image ${imageId}`;
     img.draggable = false;
     img.classList.add('hidden');
 
